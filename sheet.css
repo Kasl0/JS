@@ -1,0 +1,64 @@
+aside  {
+    float: right;
+    position: relative;
+    bottom: 120px;
+    width: 400px;
+}
+
+h1, h2 {
+    margin: 0 0;
+}
+
+main { 
+    width: 400px;
+}
+
+blockquote {
+    margin-left: 0;
+}
+
+nav {
+    width: max-content;
+}
+
+nav ul {
+    margin: 1em 0;
+}
+
+.azure {
+    background-color: #EFF;
+    border: 1px solid black;
+    box-shadow: 1px 1px 1px black;
+    padding: 0.5em 1em;
+    margin: 1em 0;
+}
+
+.animation {
+    --text-color-initial: #007bff;
+    --text-color-final: #ff073a;
+    color: var(--text-color-initial);
+    animation-name: zmien-kolor;
+    animation-duration: 2s;
+    animation-direction: alternate;
+    animation-iteration-count: infinite;
+}
+
+@keyframes zmien-kolor {
+    0% {
+        color: var(--text-color-initial);
+    }
+    100% {
+        color: var(--text-color-final);
+    }
+}
+
+@media (max-width: 800px) {
+    header, nav, aside, main, footer {
+        position: static;
+        width: 93vw;
+        font-size: 3vw;
+    }
+    aside {
+        float: none;
+    }
+}
