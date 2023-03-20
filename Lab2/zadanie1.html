@@ -1,0 +1,16 @@
+<html>
+    <head>
+        <script src="zadanie1.js"></script>
+    </head>
+    <body>
+        <form name="form" oninput="wynik.value = pole_tekstowe.value + pole_liczbowe.value">
+            <input id="pole_tekstowe" placeholder="Wprowadź tekst" type="text">
+            +
+            <input id="pole_liczbowe" type="number" placeholder="Wprowadź liczbę">    
+            =
+            <output name="wynik" for="pole_tekstowe pole_liczbowe">Tu pojawi się wynik obliczeń</output>    
+            <br>    
+            <input type="button" value="Wypisz" onclick="wypisz()">
+        </form>
+    </body>
+</html>
