@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <script src="https://unpkg.com/react/umd/react.development.js"
+          crossorigin=""></script>
+    <script src="https://unpkg.com/react-dom/umd/react-dom.development.js"
+          crossorigin=""></script>
+    <script src="https://unpkg.com/babel-standalone/babel.min.js"></script>
+    <title>
+        Animation
+    </title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+
+        class Container extends React.Component {
+            render() {
+                return (
+                    <React.Fragment>
+                        <Counter />
+                        <Calculations />
+                    </React.Fragment>
+                );
+            }
+        }
+
+        class Counter extends React.Component {
+
+            value;
+            running;
+            timer;
+
+            constructor(props) {
+                super(props);
+                this.value = 0;
+                this.running = false;
+                this.startAnimation = this.startAnimation.bind(this);
+                this.stopAnimation = this.stopAnimation.bind(this);
+            }
+
+            startAnimation() {
+                this.value++;
+                this.running = true;
+                this.forceUpdate();
+                this.timer = window.setTimeout(this.startAnimation, 1000);
+            }
+
+            stopAnimation() {
+                this.running = false;
+                window.clearTimeout(this.timer);
+                this.forceUpdate();
+            }
+
+            render() {
+                return (
+                    <React.Fragment>
+                        <label htmlFor="counter">Counter→</label>
+                        <output id="counter" style={{ fontSize: '4vh', color: 'red' }}> {this.value} </output>
+                        <br />
+                        <button id="start" onClick={this.startAnimation} disabled={this.running}> Start </button>
+                        <button id="stop" onClick={this.stopAnimation} disabled={!this.running}> Stop </button>
+                        <br />
+                    </React.Fragment>
+                );
+            }
+        }
+
+        class Calculations extends React.Component {
+
+            constructor(props) {
+                super(props);
+                this.state = {
+                    result: 0
+                };
+                this.run = this.run.bind(this);
+            };
+
+            run(iterations) {
+                var primes = [];
+                for (var i = 0; i < iterations; i++) {
+                var candidate = i * (1000000000 * Math.random());
+                var isPrime = true;
+                for (var c = 2; c <= Math.sqrt(candidate); ++c) {
+                    if (candidate % c === 0) {
+                    isPrime = false;
+                    break;
+                    }
+                }
+                if (isPrime) {
+                    primes.push(candidate);
+                }
+                }
+                this.setState({
+                    result: primes
+                });
+            }
+
+            render() {
+                return (
+                    <React.Fragment>
+                        <Result result={this.state.result} />
+                        <Input run={this.run} />
+                    </React.Fragment>
+                );
+            }
+        }
+
+        class Result extends React.Component {
+
+            constructor(props) {
+                super(props);
+            }
+            
+            render() {
+                return (
+                    <React.Fragment>
+                        <label htmlFor="result"> Result: </label>
+                        <output id="result"> {this.props.result} </output>
+                        <br />
+                    </React.Fragment>
+                );
+            }
+        }
+
+        class Input extends React.Component {
+
+            constructor(props) {
+                super(props);
+                this.state = {
+                    value: 50
+                };
+                this.run = this.run.bind(this);
+                this.handleInputChange = this.handleInputChange.bind(this);
+            }
+
+            run() {
+                this.props.run(this.state.value);
+            }
+
+            handleInputChange(event) {
+                this.setState({
+                    value: event.target.value
+                });
+            }
+
+            render() {
+                return (
+                    <React.Fragment>
+                        <label htmlFor="iterations"> Number of iterations: </label>
+                        <input id="iterations" type="text" value={this.state.value} onChange={this.handleInputChange} />
+                        <button id="run" onClick={this.run}> Run calculations </button>
+                    </React.Fragment>
+                );
+            }
+        }
+
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<Container />);
+    </script>
+  </body>
+</html>

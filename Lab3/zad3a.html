@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animation</title>
+  </head>
+  <body>
+    <form onsubmit="event.preventDefault();">
+      <h2>requestAnimationFrame()</h2>
+      <label for="counter">Counter→</label>
+      <output id="counter" style="font-size: 4vh; color: red;">0</output>
+      <br>
+      <button id="start">Start</button>
+      <button id="stop" disabled>Stop</button>
+      <!-- ************************************************************** -->
+      <hr>
+      <h2>Time-consuming calculations — version 1</h2>
+      <label for="result_main">Result:</label>
+      <output id="result_main">0</output>
+      <br>
+      <label for="iterations_main">Number of iterations:</label>
+      <input id="iterations_main" type="text" value="50">
+      <button id="run1">Run calculations</button>
+      <!-- ************************************************************** -->
+      <h2>Time-consuming calculations — version 2</h2>
+      <label for="result_worker">Result:</label>
+      <output id="result_worker">0</output>
+      <br>
+      <label for="iterations_worker">Number of iterations:</label>
+      <input id="iterations_worker" type="text" value="50">
+      <button id="run2">Run calculations</button>
+    </form>
+    <script>
+      var animation;
+      var i = 0;
+
+      function calculatePrimes() {
+        const iterations = document.getElementById("iterations_main").value || 50;
+        // Source: https://udn.realityripple.com/docs/Tools/Performance/Scenarios/Intensive_JavaScript
+        var primes = [];
+        for (var i = 0; i < iterations; i++) {
+          var candidate = i * (1000000000 * Math.random());
+          var isPrime = true;
+          for (var c = 2; c <= Math.sqrt(candidate); ++c) {
+            if (candidate % c === 0) {
+              // not prime
+              isPrime = false;
+              break;
+            }
+          }
+          if (isPrime) {
+            primes.push(candidate);
+          }
+        }
+        return primes;
+      }
+
+      function startAnimation() {
+        document.getElementById("start").disabled = true;
+        document.getElementById("stop").disabled = false;
+        animation = window.requestAnimationFrame(step);
+      }
+
+      function step() {
+        document.getElementById("counter").value = i++;
+        animation = window.requestAnimationFrame(step);
+      }
+
+      function stopAnimation() {
+        document.getElementById("start").disabled = false;
+        document.getElementById("stop").disabled = true;
+        window.cancelAnimationFrame(animation)
+      }
+
+      var startButton = document.getElementById("start");
+      startButton.addEventListener('click', startAnimation, false);
+
+      var stopButton = document.getElementById("stop");
+      stopButton.addEventListener('click', stopAnimation, false);
+
+      var runButton1 = document.getElementById("run1");
+      runButton1.addEventListener('click', run1, false);
+
+      function run1() {
+        document.getElementById("result_main").value = calculatePrimes();
+      }
+
+      var runButton2 = document.getElementById("run2");
+      runButton2.addEventListener('click', run2, false);
+
+      function run2() {
+        var worker = new Worker('worker.js');
+        worker.addEventListener('message', function(e) {document.getElementById("result_worker").value = e.data}, false);
+        worker.postMessage(document.getElementById("iterations_worker").value);
+      }
+    </script>
+  </body>
+</html>
