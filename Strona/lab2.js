@@ -62,7 +62,7 @@ function commandInterpreter(command) {
 
     var args = command.split(' ');
 
-    //product Zephyr Komputer Zestaw https 5000 super_komputer 10
+    //product <product_id> <product_category> <product_type> <image_url> <product_price> <product_description> <product_quantity>
     if (args[0] == "product") {
         var name = args[1];
         var category = args[2];
@@ -80,16 +80,15 @@ function commandInterpreter(command) {
         addProduct(name, category, type, url, Number(price), description, Number(quantity));
     }
 
-    //customer Zbigniew Stonoga
-    if (args[0] == "customer") {
+    //customer <firstname> <lastname>
+    else if (args[0] == "customer") {
         var firstname = args[1];
         var lastname = args[2];
-
         addCustomer(firstname, lastname);
     }
 
-    //sell 1 1 2
-    if (args[0] == "sell") {
+    //sell <product_id> <customer_id> <quantity>
+    else if (args[0] == "sell") {
         var product_id = args[1];
         var customer_id = args[2];
         var quantity = args[3];
@@ -101,8 +100,12 @@ function commandInterpreter(command) {
     }
 
     //check
-    if (args[0] == "check") {
+    else if (args[0] == "check") {
         selectRandomCustomers(3);
+    }
+
+    else {
+        console.error("Invalid command: " + args[0]);
     }
 }
 

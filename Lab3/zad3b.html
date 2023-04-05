@@ -21,6 +21,8 @@
                     <React.Fragment>
                         <Counter />
                         <Calculations />
+                        <Counter />
+                        <Calculations />
                     </React.Fragment>
                 );
             }
@@ -151,6 +153,7 @@
                         <label htmlFor="iterations"> Number of iterations: </label>
                         <input id="iterations" type="text" value={this.state.value} onChange={this.handleInputChange} />
                         <button id="run" onClick={this.run}> Run calculations </button>
+                        <br />
                     </React.Fragment>
                 );
             }
