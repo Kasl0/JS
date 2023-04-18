@@ -14,6 +14,7 @@ function initIndexedDB() {
     request.onsuccess = function(event) {
         db = event.target.result;
         console.log("Database opened successfully");
+        displayAll();
     };
 
     request.onupgradeneeded = function(event) {
@@ -60,9 +61,9 @@ function readCommands() {
 
 function commandInterpreter(command) {
 
-    var args = command.split(' ');
+    var args = command.split(';');
 
-    //product <product_id> <product_category> <product_type> <image_url> <product_price> <product_description> <product_quantity>
+    //product;<product_name>;<product_category>;<product_type>;<image_url>;<product_price>;<product_description>;<product_quantity>
     if (args[0] == "product") {
         var name = args[1];
         var category = args[2];
@@ -80,14 +81,14 @@ function commandInterpreter(command) {
         addProduct(name, category, type, url, Number(price), description, Number(quantity));
     }
 
-    //customer <firstname> <lastname>
+    //customer;<firstname>;<lastname>
     else if (args[0] == "customer") {
         var firstname = args[1];
         var lastname = args[2];
         addCustomer(firstname, lastname);
     }
 
-    //sell <product_id> <customer_id> <quantity>
+    //sell;<product_id>;<customer_id>;<quantity>
     else if (args[0] == "sell") {
         var product_id = args[1];
         var customer_id = args[2];
@@ -137,6 +138,7 @@ function addProduct(name, category, type, url, price, description, quantity) {
             var addRequest = productsStore.add(product);
 
             addRequest.onsuccess = function(event) {
+                displayAll();
                 console.log("Product " + product.name + " added to productsStore");
             };
             addRequest.onerror = function(event) {
@@ -320,19 +322,124 @@ function calculateTotalSpents(ids, names) {
     }
 }
 
+function constructProductDiv(product) {
+
+    var productDiv = document.createElement("div");
+    productDiv.className = "col-xxl-4 col-lg-6";
+
+    var productCard = document.createElement("div");
+    productCard.className = "card rotate-card";
+    productCard.style.width = "25rem";
+    productCard.style.margin = "2rem";
+
+    var productImg = document.createElement("img");
+    productImg.className = "card-img-top";
+    productImg.src = product.url;
+
+    var productBody = document.createElement("div");
+    productBody.className = "card-body";
+
+    var productName = document.createElement("h3");
+    productName.style.marginBottom = "0.1rem";
+    productName.className = "card-title";
+    productName.textContent = product.name;
+    var productCategory = document.createElement("p");
+    productCategory.textContent = product.category + ", " + product.type;
+    productBody.appendChild(productName);
+    productBody.appendChild(productCategory);
+
+    var productDesc = document.createElement("div");
+    productDesc.innerHTML = product.description;
+    productBody.appendChild(productDesc);
+
+    var productPrice = document.createElement("h5");
+    productPrice.style.marginTop = "1rem";
+    productPrice.style.marginBottom = "0.1rem";
+    productPrice.textContent = product.price + " zł";
+    var productQuantity = document.createElement("p");
+    productQuantity.textContent = product.quantity + " sztuk";
+    productBody.appendChild(productPrice);
+    productBody.appendChild(productQuantity);
+    
+    productCard.appendChild(productImg);
+    productCard.appendChild(productBody);
+    productDiv.appendChild(productCard);
+
+    return productDiv;
+}
+
+function displayProducts(products) {
+    var productsDiv = document.getElementById("products");
+    productsDiv.innerHTML = "";
+
+    const cardsPerRow = 3;
+
+    for (var i = 0; i < products.length; i++) {
+
+        if (i % cardsPerRow == 0) {
+            const newRow = document.createElement('div');
+            newRow.classList.add('row');
+            productsDiv.appendChild(newRow);
+        }
+
+        const lastRow = productsDiv.lastElementChild;
+        lastRow.appendChild(constructProductDiv(products[i]));
+    }
+}
+
+function displayCategory(category) {
+
+    var transaction = db.transaction(["products"], "readonly");
+    var productsStore = transaction.objectStore("products");
+
+    var categoryIndex = productsStore.index("category");
+    var getCategoryProducts = categoryIndex.getAll(category);
+
+    getCategoryProducts.onsuccess = function() {
+        displayProducts(getCategoryProducts.result);
+    }
+}
+
+function displayType(type) {
+
+    var transaction = db.transaction(["products"], "readonly");
+    var productsStore = transaction.objectStore("products");
+
+    var typeIndex = productsStore.index("type");
+    var getTypeProducts = typeIndex.getAll(type);
+
+    getTypeProducts.onsuccess = function() {
+        displayProducts(getTypeProducts.result);
+    }
+}
+
+function displayAll() {
+
+    var transaction = db.transaction(["products"], "readonly");
+    var productsStore = transaction.objectStore("products");
+
+    var getAllProducts = productsStore.getAll();
+
+    getAllProducts.onsuccess = function() {
+        displayProducts(getAllProducts.result);
+    }
+}
+
+
 initIndexedDB();
 
 /*
-customer Zbigniew Stonoga
-customer Adam Małysz
-customer Marian Kowalski
-customer Jonasz Gajewski
-product Zephyr Komputery Zestaw https 5000 super_komputer 10
-product Turbomysz Akcesoria Chińskie https 200 super_mysz 10
-product Tronix Akcesoria Orginalne https 900 super_mysz 20
-sell 1 1 4
-sell 2 2 5
-sell 2 3 10
-sell 3 2 10
-sell 3 3 5
+customer;Zbigniew;Stonoga
+customer;Adam;Małysz
+customer;Marian;Kowalski
+customer;Jonasz;Gajewski
+product;Zephyr;Komputery;Zestaw;https://itmedia.pl/wp-content/uploads/2023/01/Komputer-stacjonarny-Work-Designer-case3-900x600.jpg;5000;<ul><li>Procesor: Intel Core i9-11900K</li><li>Płyta główna: ASUS ROG Maximus XIII Hero</li><li>Karta graficzna: NVIDIA GeForce RTX 3080 Ti</li><li>Pamięć RAM: G.Skill Trident Z RGB DDR4 32GB</li><li>Dysk twardy: Samsung 970 EVO Plus NVMe SSD 1TB</li><li>Napęd optyczny: LG WH16NS60 16x Blu-ray Burner</li><li>Zasilacz: Corsair RM850x 850W 80+ Gold Certified Fully Modular</li><li>Klawiatura: Logitech G915 TKL Wireless Mechanical Gaming Keyboard</li><li>Mysz: Razer DeathAdder V2 Pro Wireless Gaming Mouse</li><li>Monitor: ASUS ROG Swift PG279QZ 27" 1440p 165Hz IPS</li></ul>;10
+product;Turbomysz;Akcesoria;Orginalne;https://www.laptopypoznan.pl/img/cms/blog%20-%20zdj%C4%99cia/Myszka%20komputerowa.jpg;200;TurboMyszka to mysz komputerowa z dodatkowymi funkcjami i przyciskami, które pozwalają na bardziej precyzyjne i szybkie działanie. Jest szczególnie przydatna dla graczy i osób wykonujących zadania wymagające dużej precyzji, takich jak edycja zdjęć i wideo. Dzięki możliwości dostosowania ustawień myszki do indywidualnych preferencji użytkownika, TurboMyszka umożliwia jeszcze większą kontrolę i skuteczność w pracy na komputerze.;10
+product;Tronix;Akcesoria;Chińskie;https://voicebot.ai/wp-content/uploads/2020/06/mi-mouse.png;100;Tronix to chińska myszka komputerowa, która nie zawsze oferuje wysoką jakość wykonania i nie zawsze działa zgodnie z oczekiwaniami użytkowników. Choć jest dostępna w niskiej cenie, jej wydajność i trwałość pozostawiają wiele do życzenia. Warto więc zastanowić się nad zakupem myszy z innej marki, aby uniknąć problemów z jakością i wydajnością.;20
+product;TurboPC;Komputery;Zestaw;https://a.allegroimg.com/original/1ed934/9c0ca9e64787a5014dbda00f700d;2800;<ul><li>Procesor: AMD Ryzen 9 5900X</li><li>Płyta główna: MSI MPG B550 Gaming Edge WiFi</li><li>Karta graficzna: AMD Radeon RX 6800 XT</li><li>Pamięć RAM: Corsair Vengeance RGB Pro 32GB DDR4 3600MHz</li><li>Dysk twardy: Western Digital Black SN850 NVMe SSD 1TB</li><li>Napęd optyczny: brak</li><li>Zasilacz: EVGA SuperNOVA 850W 80+ Gold Certified Fully Modular</li><li>Klawiatura: Ducky One 2 Mini RGB Mechanical Keyboard</li><li>Mysz: SteelSeries Rival 650 Wireless Gaming Mouse</li><li>Monitor: LG 27GL83A-B 27" 1440p 144Hz IPS</li></ul>;10
+sell;1;1;4
+sell;2;2;5
+sell;2;3;10
+sell;3;2;10
+sell;3;3;5
 */

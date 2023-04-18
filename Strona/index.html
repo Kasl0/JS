@@ -40,12 +40,12 @@
         }
       }
     </style>
-    <script src="lab2.js" defer></script>
+    <script src="db.js" defer></script>
   </head>
   <body>
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="padding: 0.5rem 1rem;">
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="#" onclick="displayAll()">
           <canvas id="canvas" width="50" height="23"></canvas>
           Sklep komputerowy
         </a>
@@ -55,15 +55,15 @@
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav">
               <li class="nav-item active">
-                <a class="nav-link" href="#"> Komputery <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="#" onclick="displayCategory('Komputery')"> Komputery <span class="sr-only">(current)</span></a>
               </li>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   Akcesoria
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                  <a class="dropdown-item" href="#"> Orginalne </a>
-                  <a class="dropdown-item" href="#"> Chińskie </a>
+                  <a class="dropdown-item" href="#" onclick="displayType('Orginalne')"> Orginalne </a>
+                  <a class="dropdown-item" href="#" onclick="displayType('Chińskie')"> Chińskie </a>
                 </div>
               </li>
             </ul>
@@ -71,93 +71,19 @@
     </nav>
 
     <form  style="margin: 2rem;">
+      <p> <strong> To add product: </strong> product;product_name;product_category;product_type;image_url;product_price;product_description;product_quantity</p>
+      <p> <strong> To add customer: </strong> customer;firstname;lastname</p>
+      <p> <strong> To sell product: </strong> sell;product_id;customer_id;quantity</p>
+      <p> <strong> To display charts: </strong> check</p>
 			<div class="form-group">
 				<textarea class="form-control" rows="3" id="textarea"></textarea>
 			</div>
 			<button type="button" class="btn btn-primary" onclick="readCommands()"> Submit </button>
 		</form>
 
-    <canvas id="chart" width="500" height="200"></canvas>
+    <canvas id="chart" width="500" height="50"></canvas>
 
-    <div class="container">
-      <div class="row">
-        <div class="col-xxl-4 col-lg-6">
-          <div class="card rotate-card" style="width: 25rem; margin: 2rem;">
-            <img class="card-img-top" src="comp.jpg" alt="Komputer">
-            <div class="card-body">
-                <h5 class="card-title"> Super komputer </h5>
-                <ul>
-                    <li>Procesor: Intel Core i9-11900K</li>
-                    <li>Płyta główna: ASUS ROG Maximus XIII Hero</li>
-                    <li>Karta graficzna: NVIDIA GeForce RTX 3080 Ti</li>
-                    <li>Pamięć RAM: G.Skill Trident Z RGB DDR4 32GB</li>
-                    <li>Dysk twardy: Samsung 970 EVO Plus NVMe SSD 1TB</li>
-                    <li>Napęd optyczny: LG WH16NS60 16x Blu-ray Burner</li>
-                    <li>Zasilacz: Corsair RM850x 850W 80+ Gold Certified Fully Modular</li>
-                    <li>Klawiatura: Logitech G915 TKL Wireless Mechanical Gaming Keyboard</li>
-                    <li>Mysz: Razer DeathAdder V2 Pro Wireless Gaming Mouse</li>
-                    <li>Monitor: ASUS ROG Swift PG279QZ 27" 1440p 165Hz IPS</li>
-                </ul>
-            </div>
-        </div>
-        </div>
-        <div class="col-xxl-4 col-lg-6">
-          <div class="card rotate-card" style="width: 25rem; margin: 2rem;">
-            <img class="card-img-top img-fluid rotate-img" src="comp.jpg" alt="Komputer">
-            <div class="card-body">
-                <h5 class="card-title"> Super komputer </h5>
-                <ul>
-                    <li>Procesor: Intel Core i9-11900K</li>
-                    <li>Płyta główna: ASUS ROG Maximus XIII Hero</li>
-                    <li>Karta graficzna: NVIDIA GeForce RTX 3080 Ti</li>
-                    <li>Pamięć RAM: G.Skill Trident Z RGB DDR4 32GB</li>
-                    <li>Dysk twardy: Samsung 970 EVO Plus NVMe SSD 1TB</li>
-                    <li>Napęd optyczny: LG WH16NS60 16x Blu-ray Burner</li>
-                    <li>Zasilacz: Corsair RM850x 850W 80+ Gold Certified Fully Modular</li>
-                    <li>Klawiatura: Logitech G915 TKL Wireless Mechanical Gaming Keyboard</li>
-                    <li>Mysz: Razer DeathAdder V2 Pro Wireless Gaming Mouse</li>
-                    <li>Monitor: ASUS ROG Swift PG279QZ 27" 1440p 165Hz IPS</li>
-                </ul>
-            </div>
-        </div>
-        </div>
-        <div class="col-xxl-4 col-lg-6">
-          <div class="card rotate-card" style="width: 25rem; margin: 2rem;">
-            <img class="card-img-top img-fluid rotate-img" src="comp.jpg" alt="Komputer">
-            <div class="card-body">
-                <h5 class="card-title"> Super komputer </h5>
-                <ul>
-                    <li>Procesor: Intel Core i9-11900K</li>
-                    <li>Płyta główna: ASUS ROG Maximus XIII Hero</li>
-                    <li>Karta graficzna: NVIDIA GeForce RTX 3080 Ti</li>
-                    <li>Pamięć RAM: G.Skill Trident Z RGB DDR4 32GB</li>
-                    <li>Dysk twardy: Samsung 970 EVO Plus NVMe SSD 1TB</li>
-                    <li>Napęd optyczny: LG WH16NS60 16x Blu-ray Burner</li>
-                    <li>Zasilacz: Corsair RM850x 850W 80+ Gold Certified Fully Modular</li>
-                    <li>Klawiatura: Logitech G915 TKL Wireless Mechanical Gaming Keyboard</li>
-                    <li>Mysz: Razer DeathAdder V2 Pro Wireless Gaming Mouse</li>
-                    <li>Monitor: ASUS ROG Swift PG279QZ 27" 1440p 165Hz IPS</li>
-                </ul>
-            </div>
-        </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-6">
-          <div class="card rotate-card">
-            <img class="card-img-top img-fluid rotate-img" src="mouse.jpg" alt="Myszka">
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="card rotate-card">
-            <img class="card-img-top img-fluid rotate-img" src="mouse.jpg" alt="Myszka">
-          </div>
-        </div>
-      </div>
-    </div>
-  
-
-    
+    <div id="products"></div>
     
     <footer class="footer bg-dark text-center text-white" style="margin-top: 2rem;" fixed-bottom>
 
