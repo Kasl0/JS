@@ -5,6 +5,18 @@ import { exec } from 'child_process';
 
 var filename = "src/test.txt";
 
+/**
+     * Handles incoming requests.
+     *
+     * @param {IncomingMessage} request - Input stream — contains data received from the browser, e.g,. encoded contents of HTML form fields.
+     * @param {ServerResponse} response - Output stream — put in it data that you want to send back to the browser.
+     * The answer sent by this stream must consist of two parts: the header and the body.
+     * <ul>
+     *  <li>The header contains, among others, information about the type (MIME) of data contained in the body.
+     *  <li>The body contains the correct data, e.g. a form definition.
+     * </ul>
+     * @author Kacper Słoniec <kaslo@student.agh.edu.pl>
+*/
 function requestListener(request, response) {
 
     console.log('--------------------------------------');
@@ -52,8 +64,8 @@ function requestListener(request, response) {
         switch(url.searchParams.get('method')) {
 
             case 'sync':
-                let data = fs.readFileSync(filename);
-                let count = data.toString();
+                var data = fs.readFileSync(filename);
+                var count = data.toString();
                 count++;
                 response.write(`
                     <!DOCTYPE html>
@@ -130,8 +142,16 @@ function requestListener(request, response) {
     }
 }
 
+/**
+     * Creates and starts server on port 8000.
+     *
+     * @author Kacper Słoniec <kaslo@student.agh.edu.pl>
+*/
+function startServer() {
+    const server = http.createServer(requestListener);
+    server.listen(8000);
+    console.log('The server was started on port 8000');
+    console.log('To stop the server, press "CTRL + C"');
+}
 
-const server = http.createServer(requestListener);
-server.listen(8000);
-console.log('The server was started on port 8000');
-console.log('To stop the server, press "CTRL + C"');
+startServer();

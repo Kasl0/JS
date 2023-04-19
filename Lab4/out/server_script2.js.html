@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: server_script2.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: server_script2.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import http from 'node:http';
+import { URL } from 'node:url';
+import fs from 'fs-extra';
+import { exec } from 'child_process';
+
+var filename = "src/test.txt";
+
+/**
+     * Handles incoming requests.
+     *
+     * @param {IncomingMessage} request - Input stream — contains data received from the browser, e.g,. encoded contents of HTML form fields.
+     * @param {ServerResponse} response - Output stream — put in it data that you want to send back to the browser.
+     * The answer sent by this stream must consist of two parts: the header and the body.
+     * &lt;ul>
+     *  &lt;li>The header contains, among others, information about the type (MIME) of data contained in the body.
+     *  &lt;li>The body contains the correct data, e.g. a form definition.
+     * &lt;/ul>
+     * @author Kacper Słoniec &lt;kaslo@student.agh.edu.pl>
+*/
+function requestListener(request, response) {
+
+    console.log('--------------------------------------');
+    console.log(`The relative URL of the current request: ${request.url}`);
+    console.log(`Access method: ${request.method}`);
+    console.log('--------------------------------------');
+    
+    const url = new URL(request.url, `http://${request.headers.host}`);
+
+    if (url.pathname === '/' &amp;&amp; request.method === 'GET') {
+
+        response.write(`
+            &lt;!DOCTYPE html>
+            &lt;html lang="en">
+            &lt;head>
+                &lt;meta charset="utf-8">
+                &lt;meta name="viewport" content="width=device-width, initial-scale=1">
+                &lt;title>server_script2.js&lt;/title>
+            &lt;/head>
+            &lt;body>
+                &lt;main>
+                &lt;h1>server_script2.js&lt;/h1>
+                &lt;form method="GET" action="/submit">
+                    &lt;label for="method">Method&lt;/label>
+                    &lt;select id="method" name="method">
+                        &lt;option value="-">-&lt;/option>
+                        &lt;option value="sync">sync&lt;/option>
+                        &lt;option value="async">async&lt;/option>
+                    &lt;/select>
+                    &lt;br>
+                    &lt;label for="input">Input&lt;/label>
+                    &lt;textarea id="input" name="input">&lt;/textarea>
+                    &lt;br>
+                    &lt;button type="submit">Submit&lt;/button>
+                &lt;/form>
+                &lt;/main>
+            &lt;/body>
+            &lt;/html>`);
+
+        response.end();
+    }
+
+    else if (url.pathname === '/submit' &amp;&amp; request.method === 'GET') {
+
+        switch(url.searchParams.get('method')) {
+
+            case 'sync':
+                var data = fs.readFileSync(filename);
+                var count = data.toString();
+                count++;
+                response.write(`
+                    &lt;!DOCTYPE html>
+                    &lt;html lang="en">
+                    &lt;head>
+                        &lt;meta charset="utf-8">
+                        &lt;meta name="viewport" content="width=device-width, initial-scale=1">
+                        &lt;title> Sync &lt;/title>
+                    &lt;/head>
+                    &lt;body>
+                        &lt;p> Liczba uruchomień: ${count} &lt;/p>
+                    &lt;/body>
+                    &lt;/html>`);
+                response.end();
+                fs.writeFileSync(filename, count.toString());
+                break;
+
+            case 'async':
+                fs.readFile(filename, (err, data) => {
+                    if (err) throw err;
+                    let count = data.toString();
+                    count++;
+                    response.write(`
+                        &lt;!DOCTYPE html>
+                        &lt;html lang="en">
+                        &lt;head>
+                            &lt;meta charset="utf-8">
+                            &lt;meta name="viewport" content="width=device-width, initial-scale=1">
+                            &lt;title> Sync &lt;/title>
+                        &lt;/head>
+                        &lt;body>
+                            &lt;p> Liczba uruchomień: ${count} &lt;/p>
+                        &lt;/body>
+                        &lt;/html>`);
+                    response.end();
+                    fs.writeFile(filename, count.toString());
+                });
+                break;
+
+            case '-':
+                var commands = url.searchParams.get('input').replace(/\n/g, ' &amp;&amp; ');
+
+                exec(commands, (error, stdout, stderr) => {
+                    if (error) {
+                        console.error(`error: ${error.message}`);
+                        return;
+                    }
+                    if (stderr) {
+                        console.error(`stderr: ${stderr}`);
+                        return;
+                    }
+                    response.write(`
+                        &lt;!DOCTYPE html>
+                        &lt;html lang="en">
+                        &lt;head>
+                            &lt;meta charset="utf-8">
+                            &lt;meta name="viewport" content="width=device-width, initial-scale=1">
+                            &lt;title> Sync &lt;/title>
+                        &lt;/head>
+                        &lt;body>
+                            &lt;p>&lt;pre>${stdout}&lt;/pre>&lt;/p>
+                        &lt;/body>
+                        &lt;/html>`);
+                    response.end();
+                });
+                break;
+        }
+    }
+
+    else {
+        response.writeHead(501, { 'Content-Type': 'text/plain; charset=utf-8' });
+        response.write('Error 501: Not implemented');
+        response.end();
+    }
+}
+
+/**
+     * Creates and starts server on port 8000.
+     *
+     * @author Kacper Słoniec &lt;kaslo@student.agh.edu.pl>
+*/
+function startServer() {
+    const server = http.createServer(requestListener);
+    server.listen(8000);
+    console.log('The server was started on port 8000');
+    console.log('To stop the server, press "CTRL + C"');
+}
+
+startServer();
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#requestListener">requestListener</a></li><li><a href="global.html#startServer">startServer</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Wed Apr 19 2023 06:52:04 GMT+0200 (czas środkowoeuropejski letni)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

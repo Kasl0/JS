@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import { argv } from 'node:process';
 import { exec } from 'child_process';
+import process from 'node:process';
 
 var filename = "src/test.txt";
 
