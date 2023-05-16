@@ -1,0 +1,23 @@
+{
+    "products": [
+        {
+            "name": "Zephyr",
+            "type": "Zestaw",
+            "quantity": 10,
+            "price": 5000,
+            "image_url": "https://itmedia.pl/wp-content/uploads/2023/01/Komputer-stacjonarny-Work-Designer-case3-900x600.jpg",
+            "description": "<ul><li>Procesor: Intel Core i9-11900K</li><li>Płyta główna: ASUS ROG Maximus XIII Hero</li><li>Karta graficzna: NVIDIA GeForce RTX 3080 Ti</li><li>Pamięć RAM: G.Skill Trident Z RGB DDR4 32GB</li><li>Dysk twardy: Samsung 970 EVO Plus NVMe SSD 1TB</li><li>Napęd optyczny: LG WH16NS60 16x Blu-ray Burner</li><li>Zasilacz: Corsair RM850x 850W 80+ Gold Certified Fully Modular</li><li>Klawiatura: Logitech G915 TKL Wireless Mechanical Gaming Keyboard</li><li>Mysz: Razer DeathAdder V2 Pro Wireless Gaming Mouse</li><li>Monitor: ASUS ROG Swift PG279QZ 27\" 1440p 165Hz IPS</li></ul>" 
+        },
+
+        {
+            "name": "TurboPC",
+            "type": "Zestaw",
+            "quantity": 10,
+            "price": 2800,
+            "image_url": "https://a.allegroimg.com/original/1ed934/9c0ca9e64787a5014dbda00f700d",
+            "description": "<ul><li>Procesor: AMD Ryzen 9 5900X</li><li>Płyta główna: MSI MPG B550 Gaming Edge WiFi</li><li>Karta graficzna: AMD Radeon RX 6800 XT</li><li>Pamięć RAM: Corsair Vengeance RGB Pro 32GB DDR4 3600MHz</li><li>Dysk twardy: Western Digital Black SN850 NVMe SSD 1TB</li><li>Napęd optyczny: brak</li><li>Zasilacz: EVGA SuperNOVA 850W 80+ Gold Certified Fully Modular</li><li>Klawiatura: Ducky One 2 Mini RGB Mechanical Keyboard</li><li>Mysz: SteelSeries Rival 650 Wireless Gaming Mouse</li><li>Monitor: LG 27GL83A-B 27\" 1440p 144Hz IPS</li></ul>" 
+        }
+        
+
+    ]
+}
