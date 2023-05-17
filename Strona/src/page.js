@@ -87,8 +87,7 @@ export var page1 = `
 
         <form method="POST" action="/" style="margin: 2rem;">
         <p> <strong> To add product: </strong> product;product_name;product_type;image_url;product_price;product_description;product_quantity</p>
-        <p> <strong> To add customer: </strong> customer;firstname;lastname</p>
-        <p> <strong> To sell product: </strong> sell;product_id;customer_id;quantity</p>
+        <p> <strong> To sell product: </strong> sell;customer_firstname;customer_lastname;product_name;quantity </p>
         <p> <strong> To display charts: </strong> check</p>
                 <div class="form-group">
                     <select id="category" name="category">
