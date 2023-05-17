@@ -18,9 +18,11 @@ html(lang='en')
                 tr
                     th Nazwisko
                     th Imię
+                    if students[0].faculty
+                        th Wydział
                 each student in students
                     tr
                         td #{student.lname}
                         td #{student.fname}
-
-
+                        if student.faculty
+                            td #{student.faculty}
