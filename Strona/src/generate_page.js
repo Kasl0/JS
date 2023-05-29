@@ -41,14 +41,14 @@ function displayProducts(products) {
     return productsDiv;
 }
 
-export function pageAllProducts() {
-    return page1 + displayProducts(getAllProducts()) + page2;
+export async function pageAllProducts() {
+    return page1 + displayProducts(await getAllProducts()) + page2;
 }
 
-export function pageCategoryProducts(category) {
-    return page1 + displayProducts(getCategoryProducts(category)) + page2;
+export async function pageCategoryProducts(category) {
+    return page1 + displayProducts(await getCategoryProducts(category)) + page2;
 }
 
-export function pageTypeProducts(category, type) {
-    return page1 + displayProducts(getTypeProducts(category, type)) + page2;
+export async function pageTypeProducts(category, type) {
+    return page1 + displayProducts(await getTypeProducts(category, type)) + page2;
 }

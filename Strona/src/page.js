@@ -1,10 +1,10 @@
 import {getAllCategories} from './products.js'
 
-function constructFormCategoryOptions() {
+async function constructFormCategoryOptions() {
 
     let content = "";
 
-    let categories = getAllCategories();
+    let categories = await getAllCategories();
 
     for (let i=0; i<categories.length ; i++) {
         content += `<option value="${categories[i]}"> ${categories[i]} </option>`
@@ -91,7 +91,7 @@ export var page1 = `
         <p> <strong> To display charts: </strong> check</p>
                 <div class="form-group">
                     <select id="category" name="category">
-                        ${constructFormCategoryOptions()}
+                        ${await constructFormCategoryOptions()}
                     </select>
                     <textarea class="form-control" rows="3" id="textarea" name="textarea"></textarea>
                 </div>

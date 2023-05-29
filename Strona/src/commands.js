@@ -1,20 +1,20 @@
 import {getAllProducts, addProduct} from './products.js';
 import {addOrder} from './orders.js'
 
-export function readCommands(content, category) {
+export async function readCommands(content, category) {
     
     var commands = content.split('\n');
 
     for (var i = 0; i < commands.length; i++) {
         try {
-            commandInterpreter(commands[i], category);
+            await commandInterpreter(commands[i], category);
         } catch (error) {
             console.error(error.message);
         }
     }
 }
 
-function commandInterpreter(command, category) {
+async function commandInterpreter(command, category) {
 
     var args = command.split(';');
 
@@ -42,7 +42,7 @@ function commandInterpreter(command, category) {
         var product_name = args[3];
         var quantity = args[4];
 
-        let products = getAllProducts()
+        let products = await getAllProducts()
         let productAvailable = false;
 
         for (let i=0; i<products.length; i++) {

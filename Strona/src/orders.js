@@ -1,23 +1,25 @@
-import fs from 'fs-extra';
+import { MongoClient } from 'mongodb';
 
 import {sellProduct} from './products.js';
 
-var ordersJsonPath = "resources/orders.json"
+export async function addOrder(customer_firstname, customer_lastname, product_name, quantity) {
 
-export function addOrder(customer_firstname, customer_lastname, product_name, quantity) {
+    sellProduct(product_name, quantity);
 
-    let product = sellProduct(product_name, quantity);
+    const client = new MongoClient('mongodb://127.0.0.1:27017');
+    await client.connect();
+
+    const db = client.db('Sklep');
+    const collection = db.collection('orders');
 
     let order = {
         "customer_firstname": customer_firstname,
         "customer_lastname": customer_lastname,
-        "product": product
+        "product": product_name,
+        "quantity": quantity
     }
-    
-    let file_content = fs.readFileSync(ordersJsonPath);
-    let jsonData = JSON.parse(file_content);
 
-    jsonData.orders.push(order);
-
-    fs.writeFileSync(ordersJsonPath, JSON.stringify(jsonData));
+    collection.insertOne(order, (err, result) => {
+        client.close();
+    });
 }

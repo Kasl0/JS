@@ -1,159 +1,94 @@
-import fs from 'fs-extra';
+import { MongoClient } from 'mongodb';
 
-var productsPath = "resources/products"
+export async function getAllCategories() {
 
-export function getAllCategories() {
+    const client = new MongoClient('mongodb://127.0.0.1:27017');
+    await client.connect();
 
-    var files = fs.readdirSync(productsPath);
+    const db = client.db('Sklep');
+    const collection = db.collection('products');
+    const categories = await collection.distinct('category')
 
-    for (let i=0 ; i < files.length ; i++) {
-        files[i] = files[i].substring(0, files[i].lastIndexOf('.'));
-    }
+    client.close();
 
-    return files;
+    return categories;
 }
 
-export function getAllProducts() {
+export async function getAllProducts() {
 
-    var products = []
+    const client = new MongoClient('mongodb://127.0.0.1:27017');
+    await client.connect();
 
-    var files = fs.readdirSync(productsPath);
+    const db = client.db('Sklep');
+    const collection = db.collection('products');
+    const products = await collection.find({}).toArray();
 
-    for (let i=0 ; i < files.length ; i++) {
-
-        let file_content = fs.readFileSync(productsPath + "/" + files[i]);
-        let jsonData = JSON.parse(file_content);
-
-        for (let j=0 ; j < jsonData.products.length ; j++) {
-
-            let product = {
-                name: jsonData.products[j].name,
-                category: files[i].substring(0, files[i].lastIndexOf('.')),
-                type: jsonData.products[j].type,
-                url: jsonData.products[j].image_url,
-                price: jsonData.products[j].price,
-                description: jsonData.products[j].description,
-                quantity: jsonData.products[j].quantity
-            };
-
-            products.push(product);
-        }
-    }
+    client.close();
 
     return products;
 }
 
-export function getCategoryProducts(category) {
+export async function getCategoryProducts(category) {
 
-    var products = []
-    
-    let file_content = fs.readFileSync(productsPath + "/" + category + ".json");
-    let jsonData = JSON.parse(file_content);
+    const client = new MongoClient('mongodb://127.0.0.1:27017');
+    await client.connect();
 
-    for (let j=0 ; j < jsonData.products.length ; j++) {
+    const db = client.db('Sklep');
+    const collection = db.collection('products');
+    const products = await collection.find({category: category}).toArray();
 
-        let product = {
-            name: jsonData.products[j].name,
-            category: category,
-            type: jsonData.products[j].type,
-            url: jsonData.products[j].image_url,
-            price: jsonData.products[j].price,
-            description: jsonData.products[j].description,
-            quantity: jsonData.products[j].quantity
-        };
-
-        products.push(product);
-    }
+    client.close();
 
     return products;
 }
 
-export function getTypeProducts(category, type) {
+export async function getTypeProducts(category, type) {
 
-    var products = []
+    const client = new MongoClient('mongodb://127.0.0.1:27017');
+    await client.connect();
 
-    let file_content = fs.readFileSync(productsPath + "/" + category + ".json");
-    let jsonData = JSON.parse(file_content);
+    const db = client.db('Sklep');
+    const collection = db.collection('products');
+    const products = await collection.find({category: category, type: type}).toArray();
 
-    for (let j=0 ; j < jsonData.products.length ; j++) {
-
-        if (jsonData.products[j].type == type) {
-
-            let product = {
-                name: jsonData.products[j].name,
-                category: category,
-                type: jsonData.products[j].type,
-                url: jsonData.products[j].image_url,
-                price: jsonData.products[j].price,
-                description: jsonData.products[j].description,
-                quantity: jsonData.products[j].quantity
-            };
-    
-            products.push(product);
-        }
-    }
+    client.close();
 
     return products;
 }
 
-export function addProduct(name, category, type, url, price, description, quantity) {
+export async function addProduct(name, category, type, url, price, description, quantity) {
 
-    if (getAllCategories().includes(category)) {
+    const client = new MongoClient('mongodb://127.0.0.1:27017');
+    await client.connect();
 
-        let file_content = fs.readFileSync(productsPath + "/" + category + ".json");
-        let jsonData = JSON.parse(file_content);
+    const db = client.db('Sklep');
+    const collection = db.collection('products');
 
-        let product = {
-            name: name,
-            type: type,
-            quantity: quantity,
-            price: price,
-            image_url: url,
-            description: description
-        };
+    let product = {
+        name: name,
+        category: category,
+        type: type,
+        quantity: quantity,
+        price: price,
+        url: url,
+        description: description
+    };
 
-        jsonData.products.push(product);
-
-        fs.writeFileSync(productsPath + "/" + category + ".json", JSON.stringify(jsonData));
-
-    }
-    
-    else {
-        console.log("There is no such category!");
-    }
+    collection.insertOne(product, (err, result) => {
+        res.json({ message: 'Produkt został dodany', productId: result.insertedId });
+        client.close();
+    });
 }
 
-export function sellProduct(name, quantity) {
+export async function sellProduct(name, quantity) {
 
-    var files = fs.readdirSync(productsPath);
+    const client = new MongoClient('mongodb://127.0.0.1:27017');
+    await client.connect();
 
-    for (let i=0 ; i < files.length ; i++) {
+    const db = client.db('Sklep');
+    const collection = db.collection('products');
 
-        let file_content = fs.readFileSync(productsPath + "/" + files[i]);
-        let jsonData = JSON.parse(file_content);
-
-        for (let j=0 ; j < jsonData.products.length ; j++) {
-
-            if (jsonData.products[j].name == name) {
-
-                jsonData.products[j].quantity -= quantity;
-
-                fs.writeFileSync(productsPath + "/" + files[i], JSON.stringify(jsonData));
-
-                let product = {
-                    name: jsonData.products[j].name,
-                    category: files[i].substring(0, files[i].lastIndexOf('.')),
-                    type: jsonData.products[j].type,
-                    url: jsonData.products[j].image_url,
-                    price: jsonData.products[j].price,
-                    description: jsonData.products[j].description,
-                    quantity: quantity
-                };
-
-                return product;
-            }
-        }
-    }
-
-    return null;
+    collection.updateOne({ name: name }, { $inc: { quantity: -quantity } }, (err, product) => {
+        client.close();
+    });
 }
