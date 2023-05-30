@@ -1,4 +1,4 @@
-import {getAllCategories} from './products.js'
+import { getAllCategories, getAllProducts } from './products.js'
 
 async function constructFormCategoryOptions() {
 
@@ -13,7 +13,20 @@ async function constructFormCategoryOptions() {
     return content;
 }
 
-export var page1 = `
+async function constructFormProductOptions() {
+
+    let content = "";
+
+    let products = await getAllProducts();
+
+    for (let i=0; i<products.length ; i++) {
+        content += `<option value="${products[i].name}"> ${products[i].name} </option>`
+    }
+
+    return content;
+}
+
+export var head_and_nav = `
     <!DOCTYPE html>
     <html lang="pl">
 
@@ -81,28 +94,69 @@ export var page1 = `
                     <a class="dropdown-item" href="/Akcesoria/Chinskie"> Chińskie </a>
                     </div>
                 </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/admin"> Admin panel <span class="sr-only">(current)</span></a>
+                </li>
                 </ul>
             </div>
-        </nav>
+        </nav>`
 
-        <form method="POST" action="/" style="margin: 2rem;">
-        <p> <strong> To add product: </strong> product;product_name;product_type;image_url;product_price;product_description;product_quantity</p>
-        <p> <strong> To sell product: </strong> sell;customer_firstname;customer_lastname;product_name;quantity </p>
-        <p> <strong> To display charts: </strong> check</p>
-                <div class="form-group">
-                    <select id="category" name="category">
-                        ${await constructFormCategoryOptions()}
-                    </select>
-                    <textarea class="form-control" rows="3" id="textarea" name="textarea"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary""> Submit </button>
-            </form>
+export var add_product_form = `
+    <form method="POST" action="/add" style="margin: 2rem;">
+    <p><strong>New product</strong></p>
+        <div class="form-group">
+            <select id="category" name="category"> ${await constructFormCategoryOptions()} </select> <br>
 
-        <canvas id="chart" width="500" height="50"></canvas>
+            <label for="product_name">Name</label>
+            <input class="form-control" type="text" id="product_name" name="product_name">
 
-        <div id="products">`
+            <label for="product_type">Type</label>
+            <input class="form-control" type="text" id="product_type" name="product_type">
 
-export var page2 = `
+            <label for="image_url">Image url</label>
+            <input class="form-control" type="text" id="image_url" name="image_url">
+
+            <label for="product_price">Price [in PLN]</label>
+            <input class="form-control" type="number" id="product_price" name="product_price">
+
+            <label for="product_quantity">Quantity</label>
+            <input class="form-control" type="number" id="product_quantity" name="product_quantity">
+
+            <label for="product_description">Description</label>
+            <input class="form-control" type="text" id="product_description" name="product_description">
+        </div>
+        <button type="submit" class="btn btn-primary""> Add product </button>
+    </form>`
+
+export var sell_product_form = `
+    <form method="POST" action="/sell" style="margin: 2rem;">
+    <p><strong>Sell product</strong></p>
+        <div class="form-group">
+            <select id="product" name="product"> ${await constructFormProductOptions()} </select> <br>
+
+            <label for="product_quantity">Quantity</label>
+            <input class="form-control" type="number" id="product_quantity" name="product_quantity">
+
+            <label for="customer_firstname">Customer firstname</label>
+            <input class="form-control" type="text" id="customer_firstname" name="customer_firstname">
+
+            <label for="customer_lastname">Customer lastname</label>
+            <input class="form-control" type="text" id="customer_lastname" name="customer_lastname">
+        </div>
+        <button type="submit" class="btn btn-primary""> Sell product </button>
+    </form>`
+
+export var charts_display_form = `
+    <form method="POST" action="/charts" style="margin: 2rem;">
+    <p><strong>Display charts</strong></p>
+        <button type="submit" class="btn btn-primary""> Display </button>
+    </form>`
+
+export var after_form = `
+    <canvas id="chart" width="500" height="50"></canvas>
+    <div id="products">`
+
+export var page_end = `
     </div>
             
     <footer class="footer bg-dark text-center text-white" style="margin-top: 2rem;" fixed-bottom>

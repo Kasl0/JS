@@ -1,4 +1,4 @@
-import {page1, page2} from './page.js'
+import {head_and_nav, add_product_form, sell_product_form, charts_display_form, after_form, page_end} from './page.js'
 import {getAllProducts, getCategoryProducts, getTypeProducts} from './products.js'
 
 function constructProductDiv(product) {
@@ -41,14 +41,23 @@ function displayProducts(products) {
     return productsDiv;
 }
 
-export async function pageAllProducts() {
-    return page1 + displayProducts(await getAllProducts()) + page2;
+export async function pageAllProducts(isAdmin) {
+    if (isAdmin)
+        return head_and_nav + add_product_form + charts_display_form + after_form + displayProducts(await getAllProducts()) + page_end;
+    else
+        return head_and_nav + sell_product_form + after_form + displayProducts(await getAllProducts()) + page_end;
 }
 
-export async function pageCategoryProducts(category) {
-    return page1 + displayProducts(await getCategoryProducts(category)) + page2;
+export async function pageCategoryProducts(isAdmin, category) {
+    if (isAdmin)
+        return head_and_nav + add_product_form + charts_display_form + after_form + displayProducts(await getCategoryProducts(category)) + page_end;
+    else
+        return head_and_nav + sell_product_form + after_form + displayProducts(await getCategoryProducts(category)) + page_end;
 }
 
-export async function pageTypeProducts(category, type) {
-    return page1 + displayProducts(await getTypeProducts(category, type)) + page2;
+export async function pageTypeProducts(isAdmin, category, type) {
+    if (isAdmin)
+        return head_and_nav + add_product_form + charts_display_form + after_form + displayProducts(await getTypeProducts(category, type)) + page_end;
+    else
+        return head_and_nav + sell_product_form + after_form + displayProducts(await getTypeProducts(category, type)) + page_end;
 }
