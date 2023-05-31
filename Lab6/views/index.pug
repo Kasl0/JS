@@ -61,14 +61,14 @@ html(lang='en')
                         if(show_alert)
                             switch(response_type) {
                                 case 'text':
-                                    window.alert(xhr.response);
+                                    document.getElementById('results').innerHTML = xhr.response;
                                     break;
                                 case 'json':
-                                    window.alert(JSON.stringify(xhr.response));
+                                    document.getElementById('results').innerHTML = JSON.stringify(xhr.response);
                                     break;
                                 case 'xml':
                                 case 'document':
-                                    window.alert(new XMLSerializer().serializeToString(xhr.responseXML));
+                                    document.getElementById('results').innerHTML = new XMLSerializer().serializeToString(xhr.responseXML);
                                     break;
                             }
                         else { 
@@ -160,14 +160,14 @@ html(lang='en')
                         result.then(function (data) {
                         switch (response_type) {
                         case 'text':
-                            window.alert(data);
+                            document.getElementById('results').innerHTML = data;
                             break;
                         case 'json':
-                            window.alert(JSON.stringify(data));
+                            document.getElementById('results').innerHTML = JSON.stringify(data);
                             break;
                         case 'xml':
                         case 'document':
-                            window.alert(data);
+                            document.getElementById('results').innerHTML = data;
                             break;
                         }
                     }); }
@@ -221,6 +221,7 @@ html(lang='en')
             mocha.setup('bdd');
             mocha.checkLeaks(); 
         main
+            div(id="results")
             table
                 tr
                     th  
