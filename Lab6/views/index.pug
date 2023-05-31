@@ -128,9 +128,42 @@ html(lang='en')
             /* response_type ∈ ["text", "json", "xml"]                                            */ 
             /* name - Contents of the form's text box - data that needs to be sent asynchronously */
             /**************************************************************************************/
-            function requestFetchAPI(http_method, response_type, name, show_alert=false) {
+            async function requestFetchAPI(http_method, response_type, name, show_alert=false) {
 
-                function handleResponse(response) { // if the promise is fulfilled
+                let response;
+
+                try {
+                    let accept = '*/*';
+
+                    switch(response_type){
+                        case 'json':
+                            accept = 'application/json';
+                            break;
+                        case 'xml':
+                            accept = 'application/xml';
+                            break;
+                    }
+                    switch(http_method) {
+                        case 'GET':
+                            response = await fetch(`http://localhost:8000/submit?name=${encodeURIComponent(name)}`, {
+                                method: 'GET',
+                                headers: {
+                                    Accept: accept
+                                }
+                            })
+                            break;
+                        case 'POST':
+                            response = await fetch('http://localhost:8000/submit', {
+                                method: http_method,
+                                headers: {
+                                    Accept: accept,
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                },
+                                body: `name=${encodeURIComponent(name)}`
+                            })
+                            break;
+                    }
+
                     if (!response.ok)
                         throw Error(response.statusText);
 
@@ -140,78 +173,42 @@ html(lang='en')
 
                     if (!response.headers.get('content-type')?.includes('application/json')) {
                         // If the received data is plain text or an XML document
-                        result = response.text(); 
+                        result = await response.text(); 
                     } 
                     else if (response_type === 'json') {
                         // If the received data is a JSON document
-                        result = response.json();
+                        result = await response.json();
                     } 
                     else if (response_type === 'xml' || response_type === 'document') {
                         // If the received data is an XML document
-                        result = response.text().then(function (text) {
-                            let parser = new DOMParser();
-                            return parser.parseFromString(text, 'application/xml');
-                    });
+                        const text = await response.text()
+                        let parser = new DOMParser();
+                        result = parser.parseFromString(text, 'application/xml');
+                    
                     }
 
                     console.log(result);
                     console.groupEnd();   
                     if(show_alert) {
-                        result.then(function (data) {
                         switch (response_type) {
                         case 'text':
-                            document.getElementById('results').innerHTML = data;
+                            document.getElementById('results').innerHTML = result;
                             break;
                         case 'json':
-                            document.getElementById('results').innerHTML = JSON.stringify(data);
+                            document.getElementById('results').innerHTML = JSON.stringify(result);
                             break;
                         case 'xml':
                         case 'document':
-                            document.getElementById('results').innerHTML = data;
+                            document.getElementById('results').innerHTML = result;
                             break;
                         }
-                    }); }
+                    }
                     else {
                         results.set(`fetch ${http_method} ${response_type}`, result);
                         dispatchEvent(received);
                     }
-                }
-
-                let accept = '*/*';
-
-                switch(response_type){
-                    case 'json':
-                        accept = 'application/json';
-                        break;
-                    case 'xml':
-                        accept = 'application/xml';
-                        break;
-                }
-                switch(http_method) {
-                    case 'GET':
-                        fetch(`http://localhost:8000/submit?name=${encodeURIComponent(name)}`, {
-                            method: 'GET',
-                            headers: {
-                                Accept: accept
-                            }
-                        }).then(handleResponse)
-                        .catch(function (error) { // if the promise is rejected
-                            window.alert(error);
-                        });
-                        break;
-                    case 'POST':
-                        fetch('http://localhost:8000/submit', {
-                            method: http_method,
-                            headers: {
-                                Accept: accept,
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            },
-                            body: `name=${encodeURIComponent(name)}`
-                        }).then(handleResponse)
-                        .catch(function (error) { // if the promise is rejected
-                            window.alert(error);
-                        });
-                        break;
+                } catch (error) {
+                    window.alert(error);
                 }
             }
         script(src="https://unpkg.com/chai/chai.js")
