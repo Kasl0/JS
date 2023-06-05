@@ -18,6 +18,38 @@ html(lang='en')
                 color: white;import express from 'express';
             }
         script.
+
+            async function getTime(europe_city) {
+                return new Promise(async function(resolve, reject) {
+                    try {
+                        const response = await fetch(`http://worldtimeapi.org/api/timezone/Europe/${europe_city}`);
+                        
+                        if (response.status === 200) {
+                            const data = await response.json();
+                            resolve(data);
+                        } else if (response.status === 404) {
+                            const errorData = await response.text();
+                            reject(errorData);
+                        } else {
+                            reject('Unknown error occurred.');
+                        }
+                    } catch(error) {
+                        reject(error.message);
+                    }
+                });
+            }
+
+            async function displayTime(event) {
+                try {
+                    event.preventDefault();
+                    var city = document.getElementById('city').value;
+                    const result = await getTime(city);
+                    document.getElementById('time').innerText = result.datetime;
+                } catch (error) {
+                    document.getElementById('time').innerText = error;
+                }
+            }
+
             /**************************************************************************************/
             /* Function that retrieves the content of one of the selected text fields of the form */
             /**************************************************************************************/
@@ -61,14 +93,14 @@ html(lang='en')
                         if(show_alert)
                             switch(response_type) {
                                 case 'text':
-                                    document.getElementById('results').innerHTML = xhr.response;
+                                    document.getElementById('results').innerText = xhr.response;
                                     break;
                                 case 'json':
-                                    document.getElementById('results').innerHTML = JSON.stringify(xhr.response);
+                                    document.getElementById('results').innerText = JSON.stringify(xhr.response);
                                     break;
                                 case 'xml':
                                 case 'document':
-                                    document.getElementById('results').innerHTML = new XMLSerializer().serializeToString(xhr.responseXML);
+                                    document.getElementById('results').innerText = new XMLSerializer().serializeToString(xhr.responseXML);
                                     break;
                             }
                         else { 
@@ -192,14 +224,14 @@ html(lang='en')
                     if(show_alert) {
                         switch (response_type) {
                         case 'text':
-                            document.getElementById('results').innerHTML = result;
+                            document.getElementById('results').innerText = result;
                             break;
                         case 'json':
-                            document.getElementById('results').innerHTML = JSON.stringify(result);
+                            document.getElementById('results').innerText = JSON.stringify(result);
                             break;
                         case 'xml':
                         case 'document':
-                            document.getElementById('results').innerHTML = result;
+                            document.getElementById('results').innerText = result;
                             break;
                         }
                     }
@@ -218,6 +250,11 @@ html(lang='en')
             mocha.setup('bdd');
             mocha.checkLeaks(); 
         main
+            form
+                label(for="city") City
+                input(type="text", id="city", name="city")
+                button(onclick='displayTime(event);') GetTime
+            div(id="time")
             div(id="results")
             table
                 tr
