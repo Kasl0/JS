@@ -6,43 +6,44 @@ import {pageAllProducts, pageCategoryProducts, pageTypeProducts} from './generat
 import {addProduct} from './products.js';
 import {addOrder} from './orders.js';
 
-const router = express.Router();
+const adminRouter = express.Router();
+const guestRouter = express.Router();
 const app = express();
 app.use(morgan('dev'));
 app.use(parser.urlencoded({ extended: true }));
 
 
-router.get('/', async function (req, res) {
-    res.write(await pageAllProducts(false));
+guestRouter.get('/', async function (req, res) {
+    res.write(await pageAllProducts());
     res.end();
 });
 
-router.get('/admin', async function (req, res) {
+adminRouter.get('/', async function (req, res) {
     res.write(await pageAllProducts(true));
     res.end();
 });
 
-router.get('/Komputery', async function (req, res) {
-    res.write(await pageCategoryProducts(false, "Komputery"));
+guestRouter.get('/Komputery', async function (req, res) {
+    res.write(await pageCategoryProducts("Komputery"));
     res.end();
 });
 
-router.get('/Akcesoria', async function (req, res) {
-    res.write(await pageCategoryProducts(false, "Akcesoria"));
+guestRouter.get('/Akcesoria', async function (req, res) {
+    res.write(await pageCategoryProducts("Akcesoria"));
     res.end();
 });
 
-router.get('/Akcesoria/Orginalne', async function (req, res) {
-    res.write(await pageTypeProducts(false, "Akcesoria", "Orginalne"));
+guestRouter.get('/Akcesoria/Orginalne', async function (req, res) {
+    res.write(await pageTypeProducts("Akcesoria", "Orginalne"));
     res.end();
 });
 
-router.get('/Akcesoria/Chinskie', async function (req, res) {
-    res.write(await pageTypeProducts(false, "Akcesoria", "Chińskie"));
+guestRouter.get('/Akcesoria/Chinskie', async function (req, res) {
+    res.write(await pageTypeProducts("Akcesoria", "Chińskie"));
     res.end();
 });
 
-router.post('/add', async function (req, res) {
+adminRouter.post('/add', async function (req, res) {
     
     if (isNaN(req.body.product_price)) throw new Error('Product price is NaN');
     if (isNaN(req.body.product_quantity)) throw new Error('Product quantity is NaN');
@@ -51,12 +52,12 @@ router.post('/add', async function (req, res) {
 
     await addProduct(req.body.product_name, req.body.category, req.body.product_type, req.body.image_url, Number(req.body.product_price), req.body.product_description, Number(req.body.product_quantity));
 
-    res.write(await pageAllProducts());
+    res.write(await pageAllProducts(true));
     res.end();
 
 });
 
-router.post('/sell', async function (req, res) {
+guestRouter.post('/sell', async function (req, res) {
     
     if (isNaN(req.body.product_quantity)) throw new Error('Product quantity is NaN');
     if (req.body.product_quantity <= 0) throw new Error('Product quantity <= 0');
@@ -68,15 +69,16 @@ router.post('/sell', async function (req, res) {
 
 });
 
-router.post('/charts', async function (req, res) {
+adminRouter.post('/charts', async function (req, res) {
 
-    res.write(await pageAllProducts());
+    res.write(await pageAllProducts(true));
     res.end();
 
 });
 
-app.use('/', router);
 
+app.use('/', guestRouter);
+app.use('/admin', adminRouter);
 
 app.listen(8000, function () {
     console.log('The server was started on port 8000');

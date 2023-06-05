@@ -102,7 +102,7 @@ export var head_and_nav = `
         </nav>`
 
 export var add_product_form = `
-    <form method="POST" action="/add" style="margin: 2rem;">
+    <form method="POST" action="/admin/add" style="margin: 2rem;">
     <p><strong>New product</strong></p>
         <div class="form-group">
             <select id="category" name="category"> ${await constructFormCategoryOptions()} </select> <br>
@@ -147,7 +147,7 @@ export var sell_product_form = `
     </form>`
 
 export var charts_display_form = `
-    <form method="POST" action="/charts" style="margin: 2rem;">
+    <form method="POST" action="/admin/charts" style="margin: 2rem;">
     <p><strong>Display charts</strong></p>
         <button type="submit" class="btn btn-primary""> Display </button>
     </form>`
