@@ -20,6 +20,9 @@ app.use(express.static(__dirname + '/public'))
 app.set('views',__dirname + '/views');
 app.set('view engine', 'pug');
 
+
+// views
+
 guestRouter.get('/', function (req, res) {
     res.render('guest');
 });
@@ -27,6 +30,9 @@ guestRouter.get('/', function (req, res) {
 adminRouter.get('/', function (req, res) {
     res.render('admin');
 });
+
+
+// products and categories requests
 
 app.post('/products', async function (req, res) {
     res.type('application/json');
@@ -40,34 +46,40 @@ app.post('/categories', async function (req, res) {
     res.json(await getAllCategories());
 });
 
-adminRouter.post('/add', async function (req, res) {
+
+// product sell
+
+guestRouter.delete('/products', async function (req, res) {
     
-    if (isNaN(req.body.product_price)) throw new Error('Product price is NaN');
-    if (isNaN(req.body.product_quantity)) throw new Error('Product quantity is NaN');
-    if (req.body.product_price <= 0) throw new Error('Product price <= 0');
-    if (req.body.product_quantity <= 0) throw new Error('Product quantity <= 0');
+    if (isNaN(req.body.quantity)) throw new Error('Product quantity is NaN');
+    if (req.body.quantity <= 0) throw new Error('Product quantity <= 0');
 
-    await addProduct(req.body.product_name, req.body.category, req.body.product_type, req.body.image_url, Number(req.body.product_price), req.body.product_description, Number(req.body.product_quantity));
+    await addOrder(req.body.firstname, req.body.lastname, req.body.name, Number(req.body.quantity));
 
-    res.render('admin');
+    res.json(await getAllProducts());
+});
+
+
+// new product
+
+adminRouter.put('/products', async function (req, res) {
+    
+    if (isNaN(req.body.price)) throw new Error('Product price is NaN');
+    if (isNaN(req.body.quantity)) throw new Error('Product quantity is NaN');
+    if (req.body.price <= 0) throw new Error('Product price <= 0');
+    if (req.body.quantity <= 0) throw new Error('Product quantity <= 0');
+
+    await addProduct(req.body.name, req.body.category, req.body.type, req.body.url, Number(req.body.price), req.body.description, Number(req.body.quantity));
+
+    res.json(await getAllProducts());
 
 });
 
-guestRouter.delete('/sell', async function (req, res) {
-    
-    if (isNaN(req.body.product_quantity)) throw new Error('Product quantity is NaN');
-    if (req.body.product_quantity <= 0) throw new Error('Product quantity <= 0');
 
-    await addOrder(req.body.customer_firstname, req.body.customer_lastname, req.body.product, Number(req.body.product_quantity));
+// charts
 
-    res.render('guest');
-
-});
-
-adminRouter.put('/charts', async function (req, res) {
-
-    res.render('admin');
-
+adminRouter.post('/charts', async function (req, res) {
+    res.json(await getAllProducts());
 });
 
 

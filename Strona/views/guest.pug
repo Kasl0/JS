@@ -12,6 +12,18 @@ head
   title
     | Sklep komputerowy
   style.
+    body {
+      user-select: none;
+    }
+
+    .dropzone.dragover {
+      background-color: white;
+    }
+
+    .dragging {
+      opacity: 0.5;
+    }
+
     .rotate-card {
     transform-style: preserve-3d;
     transition: transform 0.5s;
@@ -54,6 +66,8 @@ nav.navbar.navbar-expand-lg.navbar-dark.bg-dark(style='padding: 0.5rem 1rem;')
         a.nav-link(href='/admin')
           | Admin panel 
           span.sr-only (current)
+  div.navbar-brand
+    img#droptarget.dropzone(src="cart.jpg", alt="Cart", height="40px")
 form(style='margin: 2rem;')
   p
     strong Sell product
@@ -109,4 +123,5 @@ script.
   ctx.closePath();
   ctx.fill();
   ctx.stroke();
+  dragListener(true);
   displayProducts();

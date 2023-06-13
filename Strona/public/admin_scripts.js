@@ -5,6 +5,8 @@ async function displayProducts(category=null, type=null) {
     document.getElementById('products').innerHTML = constructProductsDiv(products);
 
     if (document.getElementById('category').innerHTML == "") displayFormCategoryOptions();
+
+    dragListener();
 }
 
 async function displayFormCategoryOptions() {
@@ -19,7 +21,7 @@ async function displayFormCategoryOptions() {
     document.getElementById('category').innerHTML = content;
 }
 
-function addProduct(event) {
+async function addProduct(event) {
 
     event.preventDefault();
 
@@ -31,17 +33,76 @@ function addProduct(event) {
     var quantity = document.getElementById('product_quantity').value;
     var description = document.getElementById('product_description').value;
 
-    console.log(name)
-    console.log(category)
-    console.log(type)
-    console.log(url)
-    console.log(price)
-    console.log(quantity)
-    console.log(description)
+    let response;
+
+    try {
+
+        response = await fetch('http://localhost:8000/admin/products', {
+            method: 'PUT',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `name=${encodeURIComponent(name)}&category=${encodeURIComponent(category)}&type=${encodeURIComponent(type)}&url=${encodeURIComponent(url)}&price=${encodeURIComponent(price)}&quantity=${encodeURIComponent(quantity)}&description=${encodeURIComponent(description)}`
+        })
+        
+        if (!response.ok)
+            throw Error(response.statusText);
+
+        console.group('Fetch API');
+        console.log(`HTTP method ⟶\t\tGET\nResponse type ⟶\tapplication/json\nInput data ⟶\t\tname=${encodeURIComponent(name)}&category=${encodeURIComponent(category)}&type=${encodeURIComponent(type)}&url=${encodeURIComponent(url)}&price=${encodeURIComponent(price)}&quantity=${encodeURIComponent(quantity)}&description=${encodeURIComponent(description)}`);
+        
+        let result = await response.json();
+
+        console.log(result);
+        console.groupEnd();
+
+        document.getElementById('products').innerHTML = constructProductsDiv(result);
+        dragListener();
+
+    } catch (error) {
+        window.alert(error);
+    }
+
+    document.getElementById('product_name').value = "";
+    document.getElementById('product_type').value = "";
+    document.getElementById('image_url').value = "";
+    document.getElementById('product_price').value = "";
+    document.getElementById('product_quantity').value = "";
+    document.getElementById('product_description').value = "";
 }
 
-function charts(event) {
+async function charts(event) {
     
     event.preventDefault();
-    console.log("charts");
+
+    let response;
+
+    try {
+
+        response = await fetch('http://localhost:8000/admin/charts', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+        
+        if (!response.ok)
+            throw Error(response.statusText);
+
+        console.group('Fetch API');
+        console.log(`HTTP method ⟶\t\tGET\nResponse type ⟶\tapplication/json\n`);
+        
+        let result = await response.json();
+
+        console.log(result);
+        console.groupEnd();
+
+        document.getElementById('products').innerHTML = constructProductsDiv(result);
+        dragListener();
+
+    } catch (error) {
+        window.alert(error);
+    }
 }
